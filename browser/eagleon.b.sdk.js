@@ -11,10 +11,9 @@ https://www.geeksforgeeks.org/how-to-detect-browser-or-tab-closing-in-javascript
 
 */
 /* activity detection events for Eagleon logs */
-class EagleonSDKEvent {
+export class EagleonSDKEvent {
   pushstate;
   XMLHttpRequest;
-
   constructor() {
     const EagleonDkEvent = this;
     //history event
@@ -49,7 +48,7 @@ class EagleonSDKEvent {
   }
 }
 /* Eagleon sdk */
-class EagleonSDK extends EagleonSDKEvent {
+export class EagleonSDK extends EagleonSDKEvent {
   ClientID;
   SecretKey;
   identityKey = '_eagleon_id';
