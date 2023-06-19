@@ -1,3 +1,4 @@
-import { EagleonSDK } from './browser/eagleon.b.sdk.js';
+import { EagleonSDK, Cms } from './browser/eagleon.b.sdk.js';
 window.EagleonSDK = EagleonSDK;
-console.log('hello');
+let c = new Cms();
+console.log('hello', c);
