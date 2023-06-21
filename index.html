@@ -5,11 +5,23 @@
     <script type="module" src="index.js"></script>
   </head>
   <body>
-    <h1>This is a Heading</h1>
-    <p>This is a paragraph.</p>
+    <h1 id="name"></h1>
+    <p id="short"></p>
+    <p id="content"></p>
     <script>
       window.onload = function () {
         console.log('window.EagleonSDK', window.EagleonSDK);
+        const sdk = new EagleonSDK({
+          ClientID: 'add58f1d-519c-432e-97b2-440eddd55af6',
+          SecretKey: 'ZLOqgaUWcClu5TsS5gViIQkhh84LnTZW42YTW2kZcd8=',
+        });
+        sdk.cms({
+          id: 'e8fe27ff-4386-4815-abef-913276c08be9',
+          renderName: '#name',
+          renderShort: '#short',
+          renderContent: '#content',
+        });
+        sdk.activitylogs();
       };
     </script>
   </body>

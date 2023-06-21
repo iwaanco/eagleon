@@ -6,7 +6,7 @@ export class EagleonSDKActivitylogs extends EagleonSDKEvent {
   SecretKey;
   identityKey = '_eagleon_id';
   usageIdentityId;
-  ApiUrl = 'http://192.168.1.207:3001/';
+  http;
   logModules = {
     visitPages: true,
     systemDateTime: true,
@@ -18,46 +18,8 @@ export class EagleonSDKActivitylogs extends EagleonSDKEvent {
     this.ClientID = obj.ClientID;
     this.SecretKey = obj.SecretKey;
     this.logModules = obj.logModules ? obj.logModules : this.logModules;
+    this.http = new EagleonSDKHttp(obj);
     this.theWatcher();
-  }
-  httpRequest(prop = {}) {
-    let {
-      url,
-      method = 'GET',
-      data = {},
-      contentType = 'application/json',
-      async = true,
-      basicAuth = true,
-      responseType = 'Object',
-    } = prop;
-    let prom = new Promise((resolve, reject) => {
-      try {
-        var request = new XMLHttpRequest();
-        request.open(method, url, async);
-        request.setRequestHeader('Content-Type', contentType);
-        if (basicAuth) {
-          let auth = 'Bearer ' + this.ClientID + '.' + this.SecretKey;
-          request.setRequestHeader('Authorization', auth);
-        }
-        request.onreadystatechange = function () {
-          if (this.readyState == 4) {
-            let res = this.responseText;
-            if (responseType == 'Object') {
-              res = JSON.parse(res);
-            }
-            resolve(res);
-          }
-        };
-        if (method != 'GET') {
-          request.send(JSON.stringify(data));
-        } else {
-          request.send();
-        }
-      } catch (error) {
-        reject(error);
-      }
-    });
-    return prom;
   }
   get cookie() {
     var cookie = {
@@ -104,8 +66,8 @@ export class EagleonSDKActivitylogs extends EagleonSDKEvent {
         info.activity = 'New user visit the website';
         info.more_information = JSON.stringify({ referrer: document.referrer });
         info.more_information_type = 'MOREINFO';
-        let res = await this.httpRequest({
-          url: this.ApiUrl + 'uep/usage-activity',
+        let res = await this.http.httpRequest({
+          url: 'uep/usage-activity',
           method: 'POST',
           data: info,
         });
@@ -133,8 +95,8 @@ export class EagleonSDKActivitylogs extends EagleonSDKEvent {
     log.more_information_type = addOninfo.more_information_type
       ? addOninfo.more_information_type
       : undefined;
-    let res = await this.httpRequest({
-      url: this.ApiUrl + 'uep/usage-activity',
+    let res = await this.http.httpRequest({
+      url: 'uep/usage-activity',
       method: 'POST',
       data: log,
     });

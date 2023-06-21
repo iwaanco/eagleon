@@ -8,13 +8,26 @@ import { EagleonSDKHttp } from './http.b.sdk.js';
 export class EagleonSDK {
   ClientID;
   SecretKey;
+  http;
   constructor(obj = {}) {
     this.ClientID = obj.ClientID;
     this.SecretKey = obj.SecretKey;
+    this.http = new EagleonSDKHttp(obj);
   }
-  cms() {}
-  http() {}
-  activitylogs() {}
+  async cms(settings = {}) {
+    let cms = new EagleonSDKCms({
+      ClientID: this.ClientID,
+      SecretKey: this.SecretKey,
+    });
+    cms.render(settings);
+    return cms;
+  }
+  activitylogs(obj = {}) {
+    obj.ClientID = this.ClientID;
+    obj.SecretKey = this.SecretKey;
+    let activitylogs = new EagleonSDKActivitylogs();
+    return activitylogs;
+  }
 }
 
 //export default EagleonSDK;

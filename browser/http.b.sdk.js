@@ -1,5 +1,14 @@
 export class EagleonSDKHttp {
-  ApiUrl = 'http://192.168.1.207:3001/';
+  ApiUrl = 'http://127.0.0.1:3001/';
+  ClientID;
+  SecretKey;
+  http;
+  internalUrl = true;
+  constructor(obj = {}) {
+    this.ClientID = obj.ClientID;
+    this.SecretKey = obj.SecretKey;
+    console.log('http');
+  }
   httpRequest(prop = {}) {
     let {
       url,
@@ -10,6 +19,7 @@ export class EagleonSDKHttp {
       basicAuth = true,
       responseType = 'Object',
     } = prop;
+    url = this.internalUrl ? this.ApiUrl + url : url;
     let prom = new Promise((resolve, reject) => {
       try {
         var request = new XMLHttpRequest();
@@ -22,6 +32,7 @@ export class EagleonSDKHttp {
         request.onreadystatechange = function () {
           if (this.readyState == 4) {
             let res = this.responseText;
+            console.log('res', res);
             if (responseType == 'Object') {
               res = JSON.parse(res);
             }
