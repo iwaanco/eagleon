@@ -7,7 +7,6 @@ export class EagleonSDKHttp {
   constructor(obj = {}) {
     this.ClientID = obj.ClientID;
     this.SecretKey = obj.SecretKey;
-    console.log('http');
   }
   httpRequest(prop = {}) {
     let {
@@ -32,7 +31,6 @@ export class EagleonSDKHttp {
         request.onreadystatechange = function () {
           if (this.readyState == 4) {
             let res = this.responseText;
-            console.log('res', res);
             if (responseType == 'Object') {
               res = JSON.parse(res);
             }

@@ -25,12 +25,11 @@ export class EagleonSDK {
   activitylogs(obj = {}) {
     obj.ClientID = this.ClientID;
     obj.SecretKey = this.SecretKey;
-    let activitylogs = new EagleonSDKActivitylogs();
+    let activitylogs = new EagleonSDKActivitylogs(obj);
     return activitylogs;
   }
 }
 
 //export default EagleonSDK;
 export const Cms = EagleonSDKCms;
-export const Http = EagleonSDKHttp;
 export const Activitylogs = EagleonSDKActivitylogs;
