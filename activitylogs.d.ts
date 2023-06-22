@@ -9,6 +9,7 @@ export interface LogSettings {
   SecretKey: string;
   logModules?: LogModules;
 }
+import { EagleonSDKEvent } from './event';
 declare class EagleonSDKActivitylogs extends EagleonSDKEvent {
   ClientID: string;
   SecretKey: string;
@@ -16,10 +17,10 @@ declare class EagleonSDKActivitylogs extends EagleonSDKEvent {
   private usageIdentityId: string;
   http: any;
   logModules: LogModules;
-  constructor(data: LogSettings): void;
-  get cookie(): { write: function; read: function; remove: function };
-  async logInfo(): Promise<Object<any>>;
-  async sendLog(addOninfo = {}): Promise<void>;
+  constructor(data: LogSettings);
+  get cookie(): { write: Function; read: Function; remove: Function };
+  logInfo(): Promise<any>;
+  sendLog(addOninfo:any): Promise<void>;
   isDayLogged(): boolean;
   theWatcher(): void;
   findFullURL(ev?: { url: string | any }): string;

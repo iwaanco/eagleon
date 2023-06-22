@@ -1,5 +1,5 @@
 declare class EagleonSDKHttp {
-  ApiUrl?: string;
+  private ApiUrl?: string;
   ClientID: string;
   SecretKey: string;
   internalUrl?: boolean;
