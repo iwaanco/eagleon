@@ -8,3 +8,7 @@ document.addEventListener('click', function(e){ console.log("click", document.ac
 https://www.geeksforgeeks.org/how-to-detect-browser-or-tab-closing-in-javascript/
 
 https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS/Errors/CORSRequestNotHttp?utm_source=devtools&utm_medium=firefox-cors-errors&utm_campaign=default
+
+https://www.geeksforgeeks.org/documentation-comments-in-jsdoc/
+https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html
+https://jsdoc.app/

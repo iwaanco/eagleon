@@ -2,7 +2,6 @@ export class EagleonSDKHttp {
   ApiUrl = 'http://127.0.0.1:3001/';
   ClientID;
   SecretKey;
-  http;
   internalUrl = true;
   constructor(obj = {}) {
     this.ClientID = obj.ClientID;

@@ -1,18 +1,24 @@
 /*
 EagleonSDK v1.0
 */
-import { EagleonSDKActivitylogs } from './activitylogs.b.sdk.js';
-import { EagleonSDKCms } from './cms.b.sdk.js';
-import { EagleonSDKHttp } from './http.b.sdk.js';
-/* Eagleon sdk */
+import { EagleonSDKActivitylogs } from './activitylogs.js';
+import { EagleonSDKCms } from './cms.js';
+
+/**
+ * Eagleon SDK
+ * @type {class}
+ */
 export class EagleonSDK {
   ClientID;
   SecretKey;
-  http;
-  constructor(obj = {}) {
-    this.ClientID = obj.ClientID;
-    this.SecretKey = obj.SecretKey;
-    this.http = new EagleonSDKHttp(obj);
+  /**
+   * @param {object} data
+   * @param {string} data.ClientID Eagleon Client Id
+   * @param {string} data.SecretKey Eagleon Secret key
+   */
+  constructor(data = {}) {
+    this.ClientID = data.ClientID;
+    this.SecretKey = data.SecretKey;
   }
   async cms(settings = {}) {
     let cms = new EagleonSDKCms({
@@ -29,7 +35,3 @@ export class EagleonSDK {
     return activitylogs;
   }
 }
-
-//export default EagleonSDK;
-export const Cms = EagleonSDKCms;
-export const Activitylogs = EagleonSDKActivitylogs;

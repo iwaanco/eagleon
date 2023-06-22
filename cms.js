@@ -1,12 +1,21 @@
-import { EagleonSDKHttp } from './http.b.sdk.js';
+import { EagleonSDKHttp } from './http.js';
+/**
+ * Eagleon CMS SDK
+ * @type {class}
+ */
 export class EagleonSDKCms {
   ClientID;
   SecretKey;
   http;
-  constructor(obj = {}) {
-    this.ClientID = obj.ClientID;
-    this.SecretKey = obj.SecretKey;
-    this.http = new EagleonSDKHttp(obj);
+  /**
+   * @param {object} data
+   * @param {string} data.ClientID Eagleon Client Id
+   * @param {string} data.SecretKey Eagleon Secret key
+   */
+  constructor(data = {}) {
+    this.ClientID = data.ClientID;
+    this.SecretKey = data.SecretKey;
+    this.http = new EagleonSDKHttp(data);
   }
   findOne(id) {
     return this.http.httpRequest({

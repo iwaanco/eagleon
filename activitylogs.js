@@ -1,5 +1,5 @@
-import { EagleonSDKEvent } from './event.b.sdk.js';
-import { EagleonSDKHttp } from './http.b.sdk.js';
+import { EagleonSDKEvent } from './event.js';
+import { EagleonSDKHttp } from './http.js';
 
 export class EagleonSDKActivitylogs extends EagleonSDKEvent {
   ClientID;
