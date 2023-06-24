@@ -1,5 +1,5 @@
 {
-  "name": "ealeon_sdk",
+  "name": "eagleon_sdk",
   "version": "1.0.0",
   "description": "Eagleon is fast logs-storing and data-storing software in smart and easy ways. It saves your time and the work of development.",
   "main": "index.js",
