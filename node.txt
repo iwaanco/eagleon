@@ -1,4 +1,4 @@
-https://sdk-design.js.org/
+https://-design.js.org/
 https://stackoverflow.com/questions/17020826/catch-any-event-which-is-doing-http-request-with-javascript
 https://stackoverflow.com/questions/4570093/how-to-get-notified-about-changes-of-the-history-via-history-pushstate
 https://developer.mozilla.org/en-US/docs/Web/API/History/pushState

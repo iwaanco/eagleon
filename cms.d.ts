@@ -1,4 +1,4 @@
-declare class EagleonSDKCms {
+export class EagleonCms {
   ClientID: string;
   SecretKey: string;
   http: any;
@@ -11,7 +11,7 @@ declare class EagleonSDKCms {
     renderShort: string;
     renderContent: string;
     renderHtml: boolean;
-    beforeRender: function;
-    afterRender: function;
+    beforeRender: Function;
+    afterRender: Function;
   }): Promise<void>;
 }

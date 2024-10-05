@@ -1,5 +1,5 @@
-export class EagleonSDKEvent {
-  pushstate;
+export class EagleonEvent {
+  event_pushstate;
   XMLHttpRequest;
   constructor() {
     const EagleonDkEvent = this;
@@ -8,7 +8,7 @@ export class EagleonSDKEvent {
       var pushState = history.pushState;
       history.pushState = function (state, unused, url) {
         if (typeof EagleonDkEvent.pushstate == 'function') {
-          EagleonDkEvent.pushstate({
+          EagleonDkEvent.event_pushstate({
             state: state,
             unused: unused,
             url: url,
@@ -18,7 +18,7 @@ export class EagleonSDKEvent {
       };
     }.bind(EagleonDkEvent)(window.history));
   }
-  ready(fn) {
+  event_ready(fn) {
     if (document.readyState != 'loading') {
       fn();
     } else if (window.addEventListener) {
@@ -30,7 +30,16 @@ export class EagleonSDKEvent {
       });
     }
   }
-  geoLocation(fn) {
+  event_clickArea(userfn, saveFn) {
+    if (typeof userfn == 'function') {
+      document.addEventListener('click', function (e) {
+        e = e || window.event;
+        var target = e.target || e.srcElement;
+        userfn(target, saveFn, e);
+      }, false);
+    }
+  }
+  event_geoLocation(fn) {
     if (typeof fn == 'function') navigator.geolocation.getCurrentPosition(fn);
   }
 }

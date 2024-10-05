@@ -1,12 +1,12 @@
-import { EagleonSDKHttp } from './http.js';
-export class EagleonSDKStructuredData {
+import { EagleonHttp } from './http.js';
+export class EagleonStructuredData {
   ClientID;
   SecretKey;
   http;
   constructor(obj = {}) {
     this.ClientID = obj.ClientID;
     this.SecretKey = obj.SecretKey;
-    this.http = new EagleonSDKHttp(obj);
+    this.http = new EagleonHttp(obj);
   }
   create(data) {
     return this.http.httpRequest({

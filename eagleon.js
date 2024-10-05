@@ -1,7 +1,7 @@
 /*
 EagleonSDK v1.0
 */
-import { EagleonSDKActivitylogs } from './activitylogs.js';
+import { EagleonActivityTracking } from './activitytracking.js';
 import { EagleonSDKCms } from './cms.js';
 
 /**
@@ -28,10 +28,10 @@ export class EagleonSDK {
     cms.render(settings);
     return cms;
   }
-  activitylogs(obj = {}) {
+  activityTracking(obj = {}) {
     obj.ClientID = this.ClientID;
     obj.SecretKey = this.SecretKey;
-    let activitylogs = new EagleonSDKActivitylogs(obj);
+    let activitylogs = new EagleonActivityTracking(obj);
     return activitylogs;
   }
 }

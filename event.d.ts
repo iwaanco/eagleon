@@ -1,7 +1,9 @@
-export class EagleonSDKEvent {
-  pushstate: any;
+export class EagleonEvent {
+  event_pushstate: any;
   XMLHttpRequest: any;
   constructor();
-  ready(fn: Function): void;
-  geoLocation(fn: Function): void;
+  event_ready(fn: Function): void;
+  event_geoLocation(fn: Function): void;
+  event_clickArea(userfn: Function, saveFn: Function): void;
+  event_geoLocation(fn: Function): void;
 }

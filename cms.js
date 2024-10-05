@@ -1,9 +1,9 @@
-import { EagleonSDKHttp } from './http.js';
+import { EagleonHttp } from './http.js';
 /**
- * Eagleon CMS SDK
+ * Eagleon CMS 
  * @type {class}
  */
-export class EagleonSDKCms {
+export class EagleonCms {
   ClientID;
   SecretKey;
   http;
@@ -15,7 +15,7 @@ export class EagleonSDKCms {
   constructor(data = {}) {
     this.ClientID = data.ClientID;
     this.SecretKey = data.SecretKey;
-    this.http = new EagleonSDKHttp(data);
+    this.http = new EagleonHttp(data);
   }
   findOne(id) {
     return this.http.httpRequest({
@@ -54,6 +54,6 @@ export class EagleonSDKCms {
     } else {
       console.warn('CMS data error', data);
     }
-    if (typeof afterRender == 'function') beforeRender(data);
+    if (typeof afterRender == 'function') afterRender(data);
   }
 }

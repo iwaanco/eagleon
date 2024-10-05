@@ -1,25 +1,26 @@
-import { EagleonSDKEvent } from './event.js';
-import { EagleonSDKHttp } from './http.js';
+import { EagleonEvent } from './event.js';
+import { EagleonHttp } from './http.js';
 
-export class EagleonSDKActivitylogs extends EagleonSDKEvent {
+export class EagleonActivityTracking extends EagleonEvent {
   ClientID;
   SecretKey;
   identityKey = '_eagleon_id';
   usageIdentityId;
   http;
-  logModules = {
-    visitPages: true,
-    systemDateTime: true,
-    screenInfo: true,
-    userLocation: true,
+  modules = {
+    NavigatePageURL: true,
+    RefererUrl: true,
+    SystemTime: true,
+    ScreenInfo: true,
+    GpsInfo: true,
   };
   constructor(obj = {}) {
     super();
     this.ClientID = obj.ClientID;
     this.SecretKey = obj.SecretKey;
-    this.logModules = obj.logModules ? obj.logModules : this.logModules;
-    this.http = new EagleonSDKHttp(obj);
-    this.theWatcher();
+    this.modules = obj.modules ? obj.modules : this.modules;
+    this.http = new EagleonHttp(obj);
+    this.recorder();
   }
   get cookie() {
     var cookie = {
@@ -51,55 +52,46 @@ export class EagleonSDKActivitylogs extends EagleonSDKEvent {
     };
     return cookie;
   }
-  async logInfo() {
-    let info = {
-      url: location.href,
-      oscpu: navigator.oscpu,
-      user_agent: navigator.userAgent,
-    };
+  async getUserId() {
     if (!this.usageIdentityId) {
       let id = this.cookie.read(this.identityKey);
       if (id) {
         this.usageIdentityId = id;
       } else {
-        info.type = 'NewUser';
-        info.activity = 'New user visit the website';
-        info.more_information = JSON.stringify({ referrer: document.referrer });
-        info.more_information_type = 'MOREINFO';
-        let res = await this.http.httpRequest({
-          url: 'uep/usage-activity',
-          method: 'POST',
-          data: info,
-        });
-        this.usageIdentityId = res.data.usageIdentiy;
-        this.cookie.write(
-          this.identityKey,
-          this.usageIdentityId,
-          7,
-          location.hostname,
-          '/',
-        );
+        this.usageIdentityId = await this.init();
       }
     }
-    info.logUsageIdentiyId = this.usageIdentityId;
+    info.usageIdentiyId = this.usageIdentityId;
+    info.activitis = [];
     return info;
   }
-  async sendLog(addOninfo = {}) {
-    let log = await this.logInfo();
-    log.url = addOninfo.url ? addOninfo.url : log.url;
-    log.activity = addOninfo.activity ? addOninfo.activity : 'unknown';
-    log.type = addOninfo.type ? addOninfo.type : 'Unknown';
-    log.more_information = addOninfo.more_information
-      ? addOninfo.more_information
-      : undefined;
-    log.more_information_type = addOninfo.more_information_type
-      ? addOninfo.more_information_type
-      : undefined;
+  async init() {
+    let res = await this.http.httpRequest({
+      url: 'uep/ativity-init',
+      method: 'GET',
+      init: true
+    });
+    //this.usageIdentityId = res.data.usageIdentiy
+    this.cookie.write(
+      this.identityKey,
+      this.usageIdentityId,
+      7,
+      location.hostname,
+      '/',
+    );
+    return res.data.usageIdentiy;
+  }
+  async save(addOninfo = {}) {
+    let log = await this.getUserId();
+    log.activitis.push(addOninfo);
     let res = await this.http.httpRequest({
       url: 'uep/usage-activity',
       method: 'POST',
       data: log,
     });
+  }
+  async _customSave(obj) {
+    await this.save(obj)
   }
   isDayLogged() {
     let key = '_eagleon_day';
@@ -111,25 +103,26 @@ export class EagleonSDKActivitylogs extends EagleonSDKEvent {
       return false;
     }
   }
-  theWatcher() {
-    this.logInfo();
-    if (this.logModules.visitPages) {
-      this.ready(this.visitLog.bind(this));
-      this.pushstate = this.visitLog.bind(this);
+  recorder() {
+    this.getUserId();
+    if (this.modules.NavigatePageURL) {
+      this.event_ready(this.act_navigatePageURL.bind(this));
+      this.event_pushstate = this.act_navigatePageURL.bind(this);
     }
     if (!this.isDayLogged()) {
-      if (this.logModules.systemDateTime) {
-        this.dateTimeLog();
+      if (this.modules.SystemTime) {
+        this.act_dateTime();
       }
-      if (this.logModules.screenInfo) {
-        this.screenLog();
+      if (this.modules.ScreenInfo) {
+        this.act_screenInfo();
       }
-      if (this.logModules.userLocation) {
-        this.geoLocation(this.locationLog.bind(this));
+      if (this.modules.GpsInfo) {
+        this.event_geoLocation(this.act_gpsInfo.bind(this));
       }
     }
   }
   findFullURL(ev = {}) {
+    //advance
     let url;
     url = ev && typeof ev.url == 'string' ? ev.url : undefined;
     url = ev && typeof ev.url == 'object' ? ev.url.href : url;
@@ -144,25 +137,74 @@ export class EagleonSDKActivitylogs extends EagleonSDKEvent {
     }
     return url;
   }
-  visitLog(ev = {}) {
+  async act_navigatePageURL(ev = {}) {
     try {
-      let log = { activity: 'Page visit', type: 'Navigate' };
+      let log = { type: 'NavigatePageURL' };
       log.url = this.findFullURL(ev);
-      this.sendLog(log);
+      await this.save(log);
     } catch (error) {
       console.error(error);
     }
   }
-  dateTimeLog() {
+  async act_refererUrl() {
+    try {
+      let d = document.referrer;
+      let log = { string_value: d, type: 'RefererUrl' };
+      await this.save(log);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  async act_inputValue(selectorString) {
+    let input = document.querySelector(selectorString);
+    if (input) {
+      try {
+        let d = input.value;
+        let log = { string_value: d, type: 'InputValue' };
+        await this.save(log);
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      console.warn("Invaild " + selectorString + " selector")
+    }
+  }
+  act_clickArea(callFn) {
+    let sfn = async function (string_value, json_data) {
+      let info = {};
+      info.string_value = string_value;
+      info.json_data = json_data;
+      info.type = 'ClickArea';
+      await this.save(info);
+    }.bind(this);
+    this.event_clickArea(callFn, sfn);
+  }
+  async act_htmlTag(selectorString, valueArea) {
+    values = ['innerText', 'innerHTML', 'outerHTML', 'outerText'];
+    let tag = document.querySelector(selectorString);
+    if (tag) {
+      try {
+        let d = tag[valueArea];
+        let log = { string_value: d, type: 'HtmlTag' };
+        await this.save(log);
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      console.warn("Invaild " + selectorString + " selector")
+    }
+
+  }
+  async act_dateTime() {
     try {
       let d = new Date().toString();
-      let log = { activity: 'System date and time: ' + d, type: 'Others' };
-      this.sendLog(log);
+      let log = { string_value: d, type: 'SystemTime' };
+      await this.save(log);
     } catch (error) {
       console.error(error);
     }
   }
-  screenLog() {
+  async act_screenInfo() {
     try {
       let scr = {
         availHeight: window.screen.availHeight,
@@ -181,17 +223,15 @@ export class EagleonSDKActivitylogs extends EagleonSDKEvent {
         width: window.screen.width,
       };
       let log = {
-        activity: `Screen height: ${window.screen.height}, Screen width: ${window.screen.width}`,
-        type: 'Others',
-        more_information: JSON.stringify(scr),
-        more_information_type: 'FULLINFO',
+        json_data: scr,
+        type: 'ScreenInfo',
       };
-      this.sendLog(log);
+      await this.save(log);
     } catch (error) {
       console.error(error);
     }
   }
-  locationLog(data = {}) {
+  async act_gpsInfo(data = {}) {
     try {
       if (data && data.coords) {
         let info = {
@@ -206,15 +246,20 @@ export class EagleonSDKActivitylogs extends EagleonSDKEvent {
         };
         let d = new Date().toString();
         let log = {
-          activity: `User location latitude :${data.coords.latitude},  longitude: ${data.coords.longitude}`,
-          type: 'Others',
-          more_information: JSON.stringify(info),
-          more_information_type: 'FULLINFO',
+          json_data: info,
+          type: 'GpsInfo',
         };
-        this.sendLog(log);
+        await this.save(log);
       }
     } catch (error) {
       console.error(error);
     }
+  }
+  async act_CustomTracking(custom_title, string_value = '', json_data = null) {
+    obj = {};
+    obj.custom_title = custom_title;
+    obj.string_value = string_value;
+    obj.json_data = json_data;
+    await this.save(obj);
   }
 }

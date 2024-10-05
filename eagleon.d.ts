@@ -1,7 +1,7 @@
 /*
 EagleonSDK v1.0
 */
-import { EagleonSDKActivitylogs, LogSettings } from './activitylogs.js';
+import { EagleonActivityTracking, eagleon_actSettings } from './activitylogs.js';
 import { EagleonSDKCms } from './cms.js';
 /**
  * Eagleon SDK
@@ -17,5 +17,5 @@ declare class EagleonSDK {
    */
   constructor(data: { ClientID: string; SecretKey: string });
   cms(settings: { ClientID: string; SecretKey: string }): EagleonSDKCms;
-  activitylogs(data: LogSettings): EagleonSDKActivitylogs;
+  activityTracking(data: eagleon_actSettings): EagleonActivityTracking;
 }

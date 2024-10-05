@@ -1,5 +1,6 @@
-export class EagleonSDKHttp {
+export class EagleonHttp {
   ApiUrl = 'http://127.0.0.1:3001/';
+  InitUrl = 'http://127.0.0.1:5000/'
   ClientID;
   SecretKey;
   internalUrl = true;
@@ -16,8 +17,9 @@ export class EagleonSDKHttp {
       async = true,
       basicAuth = true,
       responseType = 'Object',
+      init = false
     } = prop;
-    url = this.internalUrl ? this.ApiUrl + url : url;
+    url = this.internalUrl ? ((init) ? InitUrl : this.ApiUrl) + url : url;
     let prom = new Promise((resolve, reject) => {
       try {
         var request = new XMLHttpRequest();

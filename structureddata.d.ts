@@ -1,9 +1,9 @@
-import { EagleonSDKHttp } from './http.js';
-export class EagleonSDKStructuredData {
+import { EagleonHttp } from './http';
+export class EagleonStructuredData {
   ClientID: string;
   SecretKey: string;
-  http: EagleonSDKHttp;
-  constructor(data: { ClientID: string; SecretKey: string }): void;
+  http: EagleonHttp;
+  constructor(data: { ClientID: string; SecretKey: string });
   create(data: any): Promise<any>;
   update(id: string, data: any): Promise<any>;
 }

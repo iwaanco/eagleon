@@ -1,5 +1,5 @@
 {
-  "name": "eagleon_sdk",
+  "name": "eagleon_",
   "version": "1.0.0",
   "description": "Eagleon is fast logs-storing and data-storing software in smart and easy ways. It saves your time and the work of development.",
   "main": "index.js",
@@ -8,11 +8,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/iwaanco/eagleon_sdk.git"
+    "url": "git+https://github.com/iwaanco/eagleon_.git"
   },
   "keywords": [
     "eagleon",
-    "eaglonsdk",
+    "eaglon",
     "iwaan",
     "logs",
     "store"
@@ -21,7 +21,7 @@
   "license": "ISC",
   "types": "./index.d.ts",
   "bugs": {
-    "url": "https://github.com/iwaanco/eagleon_sdk/issues"
+    "url": "https://github.com/iwaanco/eagleon_/issues"
   },
-  "homepage": "https://github.com/iwaanco/eagleon_sdk#readme"
+  "homepage": "https://github.com/iwaanco/eagleon_#readme"
 }
