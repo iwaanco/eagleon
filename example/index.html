@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Page Title</title>
+  <script type="module" src="/index.js"></script>
+</head>
+
+<body>
+  <h2>ok fine</h2>
+  <h1 id="name"></h1>
+  <p id="short"></p>
+  <p id="content"></p>
+  <script>
+    window.onload = function () {
+      //console.log('window.Eagleon', EagleonStructuredData);
+      const ev = new window.Eagleon.SDK({
+        ClientID: 'df0b7f83-952e-4824-81c2-e085cb15b2e3',
+        SecretKey: 'Q6GQg8W8K/fH0r8cyEhexZnxrPA/Ll9I/ZmGEgB71Tk=',
+      })
+        // .cms({
+        //   id: 'e8fe27ff-4386-4815-abef-913276c08be9',
+        //   renderName: '#name',
+        //   renderShort: '#short',
+        //   renderContent: '#content',
+        // })
+        .activityTracking();
+    };
+  </script>
+</body>
+
+</html>

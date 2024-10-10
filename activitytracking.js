@@ -12,7 +12,7 @@ export class EagleonActivityTracking extends EagleonEvent {
     RefererUrl: true,
     SystemTime: true,
     ScreenInfo: true,
-    GpsInfo: true,
+    GpsInfo: false,
   };
   constructor(obj = {}) {
     super();

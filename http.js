@@ -19,7 +19,7 @@ export class EagleonHttp {
       responseType = 'Object',
       init = false
     } = prop;
-    url = this.internalUrl ? ((init) ? InitUrl : this.ApiUrl) + url : url;
+    url = this.internalUrl ? ((init) ? this.InitUrl : this.ApiUrl) + url : url;
     let prom = new Promise((resolve, reject) => {
       try {
         var request = new XMLHttpRequest();

@@ -2,7 +2,7 @@
 EagleonSDK v1.0
 */
 import { EagleonActivityTracking } from './activitytracking.js';
-import { EagleonSDKCms } from './cms.js';
+import { EagleonCms } from './cms.js';
 
 /**
  * Eagleon SDK
@@ -21,7 +21,7 @@ export class EagleonSDK {
     this.SecretKey = data.SecretKey;
   }
   async cms(settings = {}) {
-    let cms = new EagleonSDKCms({
+    let cms = new EagleonCms({
       ClientID: this.ClientID,
       SecretKey: this.SecretKey,
     });
