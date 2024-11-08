@@ -1,28 +1,53 @@
 import { EagleonEvent } from './event.js';
 import { EagleonHttp } from './http.js';
-
+import { EagleonConsole } from './console.js';
+const _eagleonActWrn = {
+  debugWaring: {
+    msg: '%cEagleon Activity Tracking -> Running  is a debug mode. Do not use it in a production deployment.',
+    style: 'font-weight: bold;  font-size: 25px; color:#ffce0c;'
+  },
+  idMissMsg: "Activity Id is missing",
+  consolePrint: `Printed by EagleonActivityTracking`,
+}
 export class EagleonActivityTracking extends EagleonEvent {
   ClientID;
   SecretKey;
-  identityKey = '_eagleon_id';
+  usrCookieIdKey = '_eagleon_id';
+  usrDayFlagKey = '_eagleon_day';
   usageIdentityId;
   http;
-  modules = {
+  repeatActivities = {
     NavigatePageURL: true,
     RefererUrl: true,
     SystemTime: true,
     ScreenInfo: true,
-    GpsInfo: false,
+    //GpsInfo: { tiggerTime: 4000 },
   };
+  routineActivities = {
+    SystemTime: true,
+    ScreenInfo: true,
+    GpsInfo: { tiggerTime: 4000 },
+  };
+  lifeCycle = {
+    userLifeTime: 7,
+    routineTime: 1,
+  };
+  debug = true;
   constructor(obj = {}) {
     super();
     this.ClientID = obj.ClientID;
     this.SecretKey = obj.SecretKey;
-    this.modules = obj.modules ? obj.modules : this.modules;
+    this.repeatActivities = obj.repeatActivities ? obj.repeatActivities : this.repeatActivities;
+    this.routineActivities = obj.routineActivities ? obj.routineActivities : this.routineActivities;
+    this.lifeCycle = obj.lifeCycle ? obj.lifeCycle : this.lifeCycle;
+    this.debug = obj.debug ? true : this.debug;
     this.http = new EagleonHttp(obj);
+    this.print = new EagleonConsole();
+    this.print.debug = this.debug;
+    if (this.debug) console.log(_eagleonActWrn.debugWaring.msg, _eagleonActWrn.debugWaring.style);
     this.recorder();
   }
-  get cookie() {
+  get _cookie() {
     var cookie = {
       write: function (name, value, days, domain, path) {
         var date = new Date();
@@ -52,80 +77,122 @@ export class EagleonActivityTracking extends EagleonEvent {
     };
     return cookie;
   }
-  async getUserId() {
+  async _getUserId() {
+    let info = {
+      url: this._findFullURL(),
+    };
     if (!this.usageIdentityId) {
-      let id = this.cookie.read(this.identityKey);
+      let id = this._cookie.read(this.usrCookieIdKey);
       if (id) {
         this.usageIdentityId = id;
       } else {
-        this.usageIdentityId = await this.init();
+        let uid = await this._init();
+        this.usageIdentityId = (uid) ? uid : undefined;
       }
     }
     info.usageIdentiyId = this.usageIdentityId;
     info.activitis = [];
     return info;
   }
-  async init() {
-    let res = await this.http.httpRequest({
-      url: 'uep/ativity-init',
-      method: 'GET',
-      init: true
-    });
-    //this.usageIdentityId = res.data.usageIdentiy
-    this.cookie.write(
-      this.identityKey,
-      this.usageIdentityId,
-      7,
-      location.hostname,
-      '/',
-    );
-    return res.data.usageIdentiy;
+  async _init() {
+    let print = new EagleonConsole(this.debug);
+    print.name1("Init Activity");
+    try {
+      print.vaildInput2('-');
+      print.gotIt3("Collect information from headers http-request " + "https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers");
+      let res = await this.http.httpRequest({
+        url: 'uep/usage-activity/init',
+        method: 'GET',
+        init: true
+      });
+      if (res.statusCode == 200) {
+        this.usageIdentityId = res.data.usageIdentiy
+        this._cookie.write(
+          this.usrCookieIdKey,
+          this.usageIdentityId,
+          this.lifeCycle.userLifeTime,
+          location.hostname,
+          '/',
+        );
+        print.response5(res);
+        return res.data.usageIdentiy;
+      } else {
+        print.response5(res);
+      }
+    } catch (error) {
+      print.error("error", error);
+    }
   }
-  async save(addOninfo = {}) {
-    let log = await this.getUserId();
-    log.activitis.push(addOninfo);
-    let res = await this.http.httpRequest({
-      url: 'uep/usage-activity',
-      method: 'POST',
-      data: log,
-    });
+  async _save(addOninfo = {}, print) {
+    let log = await this._getUserId();
+    if (this.usageIdentityId) {
+      log.activitis.push(addOninfo);
+      print.sendData4(log);
+      let res = await this.http.httpRequest({
+        url: 'uep/usage-activity',
+        method: 'POST',
+        data: log,
+      });
+      return res;
+    } else {
+      return { statusCode: 400, message: idMissMsg };
+    }
   }
-  async _customSave(obj) {
-    await this.save(obj)
-  }
-  isDayLogged() {
-    let key = '_eagleon_day';
-    let id = this.cookie.read(key);
+  _isDayLogged() {
+    let id = this._cookie.read(this.usrDayFlagKey);
     if (id) {
       return true;
     } else {
-      this.cookie.write(key, 1, 1, location.hostname, '/');
+      this._cookie.write(this.usrDayFlagKey, 1, this.lifeCycle.routineTime, location.hostname, '/');
       return false;
     }
   }
-  recorder() {
-    this.getUserId();
-    if (this.modules.NavigatePageURL) {
-      this.event_ready(this.act_navigatePageURL.bind(this));
-      this.event_pushstate = this.act_navigatePageURL.bind(this);
-    }
-    if (!this.isDayLogged()) {
-      if (this.modules.SystemTime) {
-        this.act_dateTime();
+  async _caller(tasks) {
+    if (this.usageIdentityId) {
+      if (tasks.NavigatePageURL) {
+        this.event_ready(this.act_navigatePageURL.bind(this));
+        this.event_pushstate = this.act_navigatePageURL.bind(this);
       }
-      if (this.modules.ScreenInfo) {
-        this.act_screenInfo();
+      if (tasks.RefererUrl) {
+        await this.act_refererUrl()
       }
-      if (this.modules.GpsInfo) {
-        this.event_geoLocation(this.act_gpsInfo.bind(this));
+      if (tasks.InputValue) {
+        await this.act_inputValue(tasks.InputValue.selectorString);
+      }
+      if (tasks.ClickArea) {
+        if (tasks.ClickArea.callBack == 'function') {
+          await this.act_clickArea(tasks.ClickArea.callBack);
+        }
+      }
+      if (tasks.HtmlTag) {
+        await this.act_htmlTag(tasks.HtmlTag.selectorString, tasks.HtmlTag.valueArea);
+      }
+      if (tasks.SystemTime) {
+        await this.act_dateTime();
+      }
+      if (tasks.ScreenInfo) {
+        await this.act_screenInfo();
+      }
+      if (tasks.GpsInfo) {
+        setTimeout(async function () {
+          await this.act_gpsInfo();
+        }.bind(this), tasks.GpsInfo.tiggerTime)
       }
     }
   }
-  findFullURL(ev = {}) {
+  async recorder() {
+    await this._getUserId();
+    await this._caller(this.repeatActivities);
+    if (!this._isDayLogged()) {
+      await this._caller(this.routineActivities);
+    }
+  }
+  _findFullURL(ev = {}) {
     //advance
     let url;
     url = ev && typeof ev.url == 'string' ? ev.url : undefined;
     url = ev && typeof ev.url == 'object' ? ev.url.href : url;
+    url = (url) ? url : location.href;
     if (url) {
       if (!(/https:\/\//.test(url) || /http:\/\//.test(url))) {
         if (url[0] == '/') {
@@ -138,73 +205,112 @@ export class EagleonActivityTracking extends EagleonEvent {
     return url;
   }
   async act_navigatePageURL(ev = {}) {
+    let print = new EagleonConsole(this.debug);
+    print.name1("NavigatePageURL Activity");
     try {
+      print.vaildInput2('-');
       let log = { type: 'NavigatePageURL' };
-      log.url = this.findFullURL(ev);
-      await this.save(log);
+      log.url = this._findFullURL(ev);
+      print.gotIt3(log.url);
+      let res = await this._save(log, print);
+      print.response5(res);
     } catch (error) {
-      console.error(error);
+      print.error("error", error);
     }
   }
   async act_refererUrl() {
+    let print = new EagleonConsole(this.debug);
+    print.name1("RefererUrl Activity");
     try {
       let d = document.referrer;
+      print.gotIt3(d);
       let log = { string_value: d, type: 'RefererUrl' };
-      await this.save(log);
+      let res = await this._save(log, print);
+      print.response5(res);
     } catch (error) {
-      console.error(error);
+      print.response5(error);
+      print.error("error", error);
     }
   }
   async act_inputValue(selectorString) {
+    let print = new EagleonConsole(this.debug);
+    print.name1("InputValue Activity");
     let input = document.querySelector(selectorString);
+    print.vaildInput2(input);
     if (input) {
       try {
         let d = input.value;
+        print.gotIt3(d);
         let log = { string_value: d, type: 'InputValue' };
-        await this.save(log);
+        let res = await this._save(log, print);
+        print.response5(res);
       } catch (error) {
-        console.error(error);
+        print.response5(error);
+        print.error("error", error);
       }
     } else {
-      console.warn("Invaild " + selectorString + " selector")
+      print.vaildInput2("Invaild " + selectorString + " selector");
     }
   }
   act_clickArea(callFn) {
-    let sfn = async function (string_value, json_data) {
-      let info = {};
-      info.string_value = string_value;
-      info.json_data = json_data;
-      info.type = 'ClickArea';
-      await this.save(info);
-    }.bind(this);
-    this.event_clickArea(callFn, sfn);
+    let print = new EagleonConsole(this.debug);
+    print.name1("ClickArea Activity");
+    try {
+      let sfn = async function (string_value, json_data) {
+        print.vaildInput2("-");
+        print.gotIt3(string_value, json_data);
+        let info = {};
+        info.string_value = string_value;
+        info.json_data = json_data;
+        info.type = 'ClickArea';
+        let res = await this._save(info, print);
+        print.response5(res);
+      }.bind(this);
+      this.event_clickArea(callFn, sfn);
+    } catch (error) {
+      print.error("error", error);
+    }
   }
   async act_htmlTag(selectorString, valueArea) {
-    values = ['innerText', 'innerHTML', 'outerHTML', 'outerText'];
-    let tag = document.querySelector(selectorString);
-    if (tag) {
-      try {
-        let d = tag[valueArea];
-        let log = { string_value: d, type: 'HtmlTag' };
-        await this.save(log);
-      } catch (error) {
-        console.error(error);
+    let print = new EagleonConsole(this.debug);
+    print.name1("HtmlTag Activity");
+    let values = ['innerText', 'innerHTML', 'outerHTML', 'outerText'];
+    if (values.includes()) {
+      let tag = document.querySelector(selectorString);
+      if (tag) {
+        try {
+          let d = tag[valueArea];
+          print.gotIt3(d);
+          let log = { string_value: d, type: 'HtmlTag' };
+          let res = await this._save(log, print);
+          print.response5(res);
+        } catch (error) {
+          print.error("error", error);
+        }
+      } else {
+        this.http.warning(this.debug, "HtmlTag", "Invaild " + selectorString + " selector");
       }
     } else {
-      console.warn("Invaild " + selectorString + " selector")
+      print.vaildInput2("Invalid valueArea parameter", valueArea);
     }
-
   }
   async act_dateTime() {
+    let print = new EagleonConsole(this.debug);
+    print.name1("SystemTime Activity");
     try {
+      print.vaildInput2('-');
       let d = new Date().toString();
+      print.gotIt3(d);
       let log = { string_value: d, type: 'SystemTime' };
-      await this.save(log);
+      let res = await this._save(log, print);
+      print.response5(res);
     } catch (error) {
-      console.error(error);
+      print.error("error", error);
     }
   }
   async act_screenInfo() {
+    let print = new EagleonConsole(this.debug);
+    print.name1("ScreenInfo Activity");
     try {
       let scr = {
         availHeight: window.screen.availHeight,
@@ -226,40 +332,62 @@ export class EagleonActivityTracking extends EagleonEvent {
         json_data: scr,
         type: 'ScreenInfo',
       };
-      await this.save(log);
+      print.vaildInput2('-');
+      let res = await this._save(log, print);
+      print.response5(res);
     } catch (error) {
-      console.error(error);
+      print.error("error", error);
     }
   }
-  async act_gpsInfo(data = {}) {
-    try {
-      if (data && data.coords) {
-        let info = {
-          accuracy: data.coords.accuracy.accuracy,
-          altitude: data.coords.altitude,
-          altitudeAccuracy: data.coords.altitudeAccuracy,
-          heading: data.coords.heading,
-          latitude: data.coords.latitude,
-          longitude: data.coords.longitude,
-          speed: data.coords.speed,
-          timestamp: data.timestamp,
-        };
-        let d = new Date().toString();
-        let log = {
-          json_data: info,
-          type: 'GpsInfo',
-        };
-        await this.save(log);
+  async act_gpsInfo() {
+    let print = new EagleonConsole(this.debug);
+    print.name1("GpsInfo Activity");
+    let eagleonInstance = this;
+    let gps_callFn = function (data) {
+      print.vaildInput2("-");
+      try {
+        if (data && data.coords) {
+          let info = {
+            accuracy: data.coords.accuracy.accuracy,
+            altitude: data.coords.altitude,
+            altitudeAccuracy: data.coords.altitudeAccuracy,
+            heading: data.coords.heading,
+            latitude: data.coords.latitude,
+            longitude: data.coords.longitude,
+            speed: data.coords.speed,
+            timestamp: data.timestamp,
+          };
+          print.gotIt3(info);
+          let log = {
+            json_data: info,
+            type: 'GpsInfo',
+          };
+          let res = eagleonInstance._save(log), print;
+          print.response5(res);
+        } else {
+          print.error("GPS permission Error", data);
+        }
+      } catch (error) {
+        print.error("error", error);
       }
-    } catch (error) {
-      console.error(error);
-    }
+    }.bind(eagleonInstance, print);
+    this.event_geoLocation(gps_callFn)
   }
   async act_CustomTracking(custom_title, string_value = '', json_data = null) {
-    obj = {};
-    obj.custom_title = custom_title;
-    obj.string_value = string_value;
-    obj.json_data = json_data;
-    await this.save(obj);
+    let print = new EagleonConsole(this.debug);
+    print.name1("CustomTracking Activity");
+    try {
+      print.vaildInput2("-");
+      print.gotIt3(string_value, json_data);
+      obj = {};
+      obj.custom_title = custom_title;
+      obj.string_value = string_value;
+      obj.json_data = json_data;
+      obj.type = 'CustomTracking';
+      let res = await this._save(obj, print);
+      print.response5(res);
+    } catch (error) {
+      print.error("error", error);
+    }
   }
 }

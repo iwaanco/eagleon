@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<head>
+    <title>page 1</title>
+    <script type="module" src="/index.js"></script>
+    <script>
+        window.onload = function () {
+            //console.log('window.Eagleon', EagleonStructuredData);
+            const ev = new window.Eagleon.SDK({
+                ClientID: '6e9f51d6-cda8-4f8d-9522-0da1a9fb0aee',
+                SecretKey: 'VlttXJpk2L6vMcIVR4P+xwbvVJvo0r6mqLYGg4LMdts=',
+            })
+            ev.activityTracking().act_gpsInfo();
+            // .cms({
+            //   id: 'e8fe27ff-4386-4815-abef-913276c08be9',
+            //   renderName: '#name',
+            //   renderShort: '#short',
+            //   renderContent: '#content',
+            // })
+        };
+        let sds = ev.StructuredData();
+    </script>
+</head>
+
+<body>
+    <a href="./page2.html">Page 2</a>
+    <a href="./index.html">Home</a>
+    <form id="form">
+        <h2>Form</h2>
+        <label for="fname">First name:</label><br>
+        <input type="text" id="fname" name="fname" value="John" /><br>
+        <label for="lname">Last name:</label><br>
+        <input type="text" id="lname" name="lname" value="Doe" /><br><br>
+        <label for="lname">email:</label><br>
+        <input type="text" id="lname" name="gm" value="Doe" /><br>
+        <input type="button" onclick="save()" value="button">
+    </form>
+</body>
+
+</html>

@@ -2,7 +2,7 @@
 <html>
 
 <head>
-  <title>Page Title</title>
+  <title>index page</title>
   <script type="module" src="/index.js"></script>
 </head>
 
@@ -11,12 +11,16 @@
   <h1 id="name"></h1>
   <p id="short"></p>
   <p id="content"></p>
+  <a href="./page2.html">Page 2</a>
+  <a href="./page1.html">Page 1</a>
+  <input id="search" type="text" name="search" onchange="ev.act_inputValue('#search')">
   <script>
+    let ev;
     window.onload = function () {
       //console.log('window.Eagleon', EagleonStructuredData);
-      const ev = new window.Eagleon.SDK({
-        ClientID: 'df0b7f83-952e-4824-81c2-e085cb15b2e3',
-        SecretKey: 'Q6GQg8W8K/fH0r8cyEhexZnxrPA/Ll9I/ZmGEgB71Tk=',
+      ev = new window.Eagleon.SDK({
+        ClientID: '6e9f51d6-cda8-4f8d-9522-0da1a9fb0aee',
+        SecretKey: 'VlttXJpk2L6vMcIVR4P+xwbvVJvo0r6mqLYGg4LMdts=',
       })
         // .cms({
         //   id: 'e8fe27ff-4386-4815-abef-913276c08be9',
@@ -25,6 +29,8 @@
         //   renderContent: '#content',
         // })
         .activityTracking();
+      ev.act_htmlTag("h2", "innerHTML");
+      //console.log("ok head", ev);
     };
   </script>
 </body>

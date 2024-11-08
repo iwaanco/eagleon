@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+<head>
+    <title>page 1</title>
+    <script type="module" src="/index.js"></script>
+    <script>
+        window.onload = function () {
+            //console.log('window.Eagleon', EagleonStructuredData);
+            const ev = new window.Eagleon.SDK({
+                ClientID: '6e9f51d6-cda8-4f8d-9522-0da1a9fb0aee',
+                SecretKey: 'VlttXJpk2L6vMcIVR4P+xwbvVJvo0r6mqLYGg4LMdts=',
+            })
+                // .cms({
+                //   id: 'e8fe27ff-4386-4815-abef-913276c08be9',
+                //   renderName: '#name',
+                //   renderShort: '#short',
+                //   renderContent: '#content',
+                // })
+                .activityTracking();
+        };
+    </script>
+</head>
+
+<body>
+    <a href="./page1.html">Page 1</a>
+    <a href="./index.html">Home</a>
+</body>
+
+</html>

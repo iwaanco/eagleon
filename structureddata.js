@@ -1,4 +1,5 @@
 import { EagleonHttp } from './http.js';
+import { EagleonConsole } from './console.js';
 export class EagleonStructuredData {
   ClientID;
   SecretKey;
@@ -21,5 +22,29 @@ export class EagleonStructuredData {
       method: 'PATCH',
       data: data,
     });
+  }
+  delete(id) {
+
+  }
+  sendForm(selectorString, data = {}) {
+    let form = document.querySelector(selectorString);
+    if (form) {
+      //vaild form
+      let sendData = {};
+      sendData.name = (data.name) ? data.name : ""
+      if (form.tagName == 'FORM') {
+        data.na
+        let fd = new FormData(form);
+        let sdsData = fd;
+        sdsData
+        this.create()
+      } else {
+        //form
+
+      }
+    } else {
+      //error invaid
+    }
+
   }
 }

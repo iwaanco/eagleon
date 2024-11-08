@@ -25,6 +25,10 @@ export class EagleonHttp {
         var request = new XMLHttpRequest();
         request.open(method, url, async);
         request.setRequestHeader('Content-Type', contentType);
+        request.setRequestHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+        request.setRequestHeader("Pragma", 'no-cache');
+        request.setRequestHeader('Expires', '0');
+        request.setRequestHeader("Cache-Control", "public, max-age=0");
         if (basicAuth) {
           let auth = 'Bearer ' + this.ClientID + '.' + this.SecretKey;
           request.setRequestHeader('Authorization', auth);
@@ -38,7 +42,7 @@ export class EagleonHttp {
             resolve(res);
           }
         };
-        if (method != 'GET') {
+        if (method == 'POST' || method == 'PATCH') {
           request.send(JSON.stringify(data));
         } else {
           request.send();
@@ -48,5 +52,21 @@ export class EagleonHttp {
       }
     });
     return prom;
+  }
+  error(debug, message, title) {
+    if (debug) {
+      if (title) console.error(`VVV=====>${title}<=====VVV`);
+      if (message)
+        throw (new Error(message))
+    }
+  }
+  warning(debug, message, title, message2 = "") {
+    if (debug) {
+      if (title && message) {
+        console.warn(`VVV=====> ${title} <=====VVV`);
+        console.warn(message);
+        if (message2) console.warn(message2);
+      }
+    }
   }
 }
