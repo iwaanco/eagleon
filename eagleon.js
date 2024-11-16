@@ -3,6 +3,7 @@ EagleonSDK v1.0
 */
 import { EagleonActivityTracking } from './activitytracking.js';
 import { EagleonCms } from './cms.js';
+import { EagleonStructuredData } from './structureddata.js';
 
 /**
  * Eagleon SDK
@@ -33,5 +34,11 @@ export class EagleonSDK {
     obj.SecretKey = this.SecretKey;
     let activitylogs = new EagleonActivityTracking(obj);
     return activitylogs;
+  }
+  structuredData(obj = {}) {
+    obj.ClientID = this.ClientID;
+    obj.SecretKey = this.SecretKey;
+    let sds = new EagleonStructuredData(obj);
+    return sds;
   }
 }

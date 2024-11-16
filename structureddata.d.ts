@@ -14,10 +14,12 @@ export class EagleonStructuredData {
   constructor(data: { ClientID: string; SecretKey: string });
   create(data: eaglonSDSDto): Promise<any>;
   update(id: string, data: eaglonSDSDto): Promise<any>;
-  sendForm(selectorString: string, data?: {
+  sendForm(id: string, data?: {
     name?: string,
     groupName?: string,
     metadata?: Object,
     permission?: 'public' | 'private',
   }): Promise<any>;
+  fillform(formId: string, id: string): Promise<any>;
+  dalete(id): Promise<any>;
 }
