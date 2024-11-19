@@ -9,23 +9,57 @@
 <body>
     <a href="./page2.html">Page 2</a>
     <a href="./index.html">Home</a>
+
     <form id="userFormId">
-        <h2>Form</h2>
-        <label for="fname">First name:</label><br>
-        <input type="text" id="fname" name="fname" value="John" /><br>
-        <label for="lname">Last name:</label><br>
-        <input type="text" id="lname" name="lname" value="Doe" /><br><br>
-        <label for="lname">email:</label><br>
-        <input type="text" id="lname" name="gm" value="Doe" /><br>
+        <h2>User Form</h2>
+        <label for="name">Name</label><br>
+        <input type="text" id="fname" name="name" value="" /><br>
+        <label for="name">Name 2</label><br>
+        <input type="text" id="fname" name="name" value="" /><br>
+        <label for="age">Age</label><br>
+        <input type="text" id="age" name="age" value="" /><br>
+        <label for="general">general</label><br>
+        <label><input type="radio" name="general" value="male">Male</label>
+        <label><input type="radio" name="general" value="female">Female</label>
+        <br>
+        <br>
+        <label for="skills">Skills</label><br>
+        <label><input type="checkbox" name="skills" value="java">Java</label>
+        <label><input type="checkbox" name="skills" value="c">C</label>
+        <label><input type="checkbox" name="skills" value="c++">C++</label>
+        <label><input type="checkbox" name="skills" value="javascript">JavaScript</label>
+        <br>
         <input type="button" id="saveBtn" value="Save">
+    </form>
+    <hr>
+    <form id="userDataFillFormId">
+        <h2>User Data Fill Form</h2>
+        <label for="name">Name</label><br>
+        <input type="text" id="fname" name="name" value="" /><br>
+        <label for="name">Name 2</label><br>
+        <input type="text" id="fname" name="name" value="" /><br>
+        <label for="age">Age</label><br>
+        <input type="text" id="age" name="age" value="" /><br>
+        <label for="general">general</label><br>
+        <label><input type="radio" name="general" value="male">Male</label>
+        <label><input type="radio" name="general" value="female">Female</label>
+        <br>
+        <br>
+        <label for="skills">Skills</label><br>
+        <label><input type="checkbox" name="skills" value="java">Java</label>
+        <label><input type="checkbox" name="skills" value="c">C</label>
+        <label><input type="checkbox" name="skills" value="c++">C++</label>
+        <label><input type="checkbox" name="skills" value="javascript">JavaScript</label>
+        <br>
+        <input type="button" id="updateBtn" value="Update">
     </form>
 </body>
 <script>
     window.onload = function () {
         //console.log('window.Eagleon', EagleonStructuredData);
         const ev = new window.Eagleon.SDK({
-            ClientID: '6e9f51d6-cda8-4f8d-9522-0da1a9fb0aee',
-            SecretKey: 'VlttXJpk2L6vMcIVR4P+xwbvVJvo0r6mqLYGg4LMdts=',
+            ClientID: '20904292-0f25-4d61-847b-bbe2bd99b881',
+            SecretKey: 'o6iWCpgdmDXupsId7W6MQzvyeaLB1041ZZhK4p7p4G8=',
         })
         ev.activityTracking().act_gpsInfo();
         // .cms({
@@ -34,11 +68,19 @@
         //   renderShort: '#short',
         //   renderContent: '#content',
         // })
-        function save() {
+        function saveForm() {
             let sds = ev.structuredData();
             sds.sendForm('userFormId')
         }
-        document.querySelector("#saveBtn").addEventListener("click", save);
+        document.querySelector("#saveBtn").addEventListener("click", saveForm);
+
+        var sds = ev.structuredData(), updateFormId = "userDataFillFormId", sdsId = 9;
+        sds.fillform(updateFormId, sdsId);
+        function updateForm() {
+            let sds = ev.structuredData();
+            sds.updateForm(sdsId, updateFormId);
+        }
+        document.querySelector("#updateBtn").addEventListener("click", updateForm);
     };
 
 </script>
