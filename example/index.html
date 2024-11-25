@@ -2,18 +2,51 @@
 <html>
 
 <head>
-  <title>index page</title>
+  <title>Activity Example</title>
   <script type="module" src="/index.js"></script>
 </head>
 
 <body>
-  <h2>ok fine</h2>
-  <h1 id="name"></h1>
-  <p id="short"></p>
-  <p id="content"></p>
-  <a href="./page2.html">Page 2</a>
-  <a href="./page1.html">Page 1</a>
-  <input id="search" type="text" name="search" onchange="ev.act_inputValue('#search')">
+  <h2>Activity Example</h2>
+  <a href="./page2.html">CMS Example</a>
+  <a href="./page1.html">SDS Example</a>
+  <h2>Want to see web page activity?</h2>
+  <p>
+    You can also right-click on the webpage and click Inspect or Inspect Element to open the developer console. </p>
+  <p>Once the developer console is open, you can click the Console tab to view the console panel. In the console, you
+    can find error messages, warnings, and other information.
+  </p>
+
+  <h2>Input Value Activity Example</h2>
+  <input id="search" type="text" name="search" placeholder="Enter the value">
+  <br>
+  <h2>Click Area Activity Example</h2>
+  <div id="box" style=" background-color: lightgrey;
+  width: 300px;
+  border: 4px solid black;
+  padding: 50px;
+  margin: 20px;
+  height: 50px;
+  ">
+    <table>
+      <tr>
+        <td><button>Button-1</button></button></td>
+        <td><button>Button-2</button></button></td>
+        <td><span>Span</span></td>
+      </tr>
+      <tr>
+        <td>
+          <h4>Tiltle-1</h4>
+        </td>
+        <td>
+          <h4>Tiltle-2</h4>
+        </td>
+        <td>
+          <p>Paragraph</p>
+        </td>
+      </tr>
+    </table>
+  </div>
   <script>
     let ev;
     window.onload = function () {
@@ -21,15 +54,45 @@
       ev = new window.Eagleon.SDK({
         ClientID: '20904292-0f25-4d61-847b-bbe2bd99b881',
         SecretKey: 'o6iWCpgdmDXupsId7W6MQzvyeaLB1041ZZhK4p7p4G8=',
-      })
-        // .cms({
-        //   id: 'e8fe27ff-4386-4815-abef-913276c08be9',
-        //   renderName: '#name',
-        //   renderShort: '#short',
-        //   renderContent: '#content',
-        // })
-        .activityTracking();
-      ev.act_htmlTag("h2", "innerHTML");
+      });
+      // .cms({
+      //   id: 'e8fe27ff-4386-4815-abef-913276c08be9',
+      //   renderName: '#name',
+      //   renderShort: '#short',
+      //   renderContent: '#content',
+      // })
+      const act = ev.activityTracking(
+        {
+          repeatActivities: {
+            NavigatePageURL: true,
+            HtmlTag: { selectorString: "h2", valueArea: "innerHTML" }
+          },
+          routineActivities: {
+            SystemTime: true,
+            ScreenInfo: true,
+            RefererUrl: true,
+          },
+          lifeCycle: {
+            userLifeTime: 7,
+            routineTime: 1,
+          },
+          debug: true
+        }
+      );
+      act.startRecord();
+      //act_inputValue
+      document.querySelector("#search").addEventListener("change", function () {
+        act.act_inputValue("#search");
+      });
+
+      //act_clickArea
+      function clickFinder(target, saveFn, e) {
+        console.log("target", target.tagName, "->", target.innerHTML);
+        let json = { html: target.innerHTML, tagName: target.tagName };
+        console.log("here come pain", target.tagName, json);
+        saveFn(target.tagName, json);
+      }
+      act.act_clickArea("#box", clickFinder);
       //console.log("ok head", ev);
     };
   </script>

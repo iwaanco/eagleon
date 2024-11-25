@@ -18,21 +18,17 @@ export class EagleonActivityTracking extends EagleonEvent {
   http;
   repeatActivities = {
     NavigatePageURL: true,
-    RefererUrl: true,
-    SystemTime: true,
-    ScreenInfo: true,
-    //GpsInfo: { tiggerTime: 4000 },
   };
   routineActivities = {
     SystemTime: true,
     ScreenInfo: true,
-    GpsInfo: { tiggerTime: 4000 },
+    RefererUrl: true,
   };
   lifeCycle = {
     userLifeTime: 7,
     routineTime: 1,
   };
-  debug = true;
+  debug = false;
   constructor(obj = {}) {
     super();
     this.ClientID = obj.ClientID;
@@ -44,8 +40,6 @@ export class EagleonActivityTracking extends EagleonEvent {
     this.http = new EagleonHttp(obj);
     this.print = new EagleonConsole();
     this.print.debug = this.debug;
-    if (this.debug) console.log(_eagleonActWrn.debugWaring.msg, _eagleonActWrn.debugWaring.style);
-    this.recorder();
   }
   get _cookie() {
     var cookie = {
@@ -173,14 +167,10 @@ export class EagleonActivityTracking extends EagleonEvent {
       if (tasks.ScreenInfo) {
         await this.act_screenInfo();
       }
-      if (tasks.GpsInfo) {
-        setTimeout(async function () {
-          await this.act_gpsInfo();
-        }.bind(this), tasks.GpsInfo.tiggerTime)
-      }
     }
   }
-  async recorder() {
+  async startRecord() {
+    if (this.debug) console.log(_eagleonActWrn.debugWaring.msg, _eagleonActWrn.debugWaring.style);
     await this._getUserId();
     await this._caller(this.repeatActivities);
     if (!this._isDayLogged()) {
@@ -252,24 +242,29 @@ export class EagleonActivityTracking extends EagleonEvent {
       print.vaildInput2("Invaild " + selectorString + " selector");
     }
   }
-  act_clickArea(callFn) {
+  act_clickArea(selectorString, callFn) {
     let print = new EagleonConsole(this.debug);
-    print.name1("ClickArea Activity");
-    try {
-      let sfn = async function (string_value, json_data) {
-        print.vaildInput2("-");
+    let self = this;
+    function sfn(string_value, json_data) {
+      try {
+        print = new EagleonConsole(self.debug);
         print.gotIt3(string_value, json_data);
         let info = {};
         info.string_value = string_value;
         info.json_data = json_data;
         info.type = 'ClickArea';
-        let res = await this._save(info, print);
-        print.response5(res);
-      }.bind(this);
-      this.event_clickArea(callFn, sfn);
-    } catch (error) {
-      print.error("error", error);
-    }
+        let save = self._save(info, print);
+        save.then((data) => {
+          print.response5(data);
+        }).catch((error) => {
+          print.error("error", error);
+        });
+      } catch (error) {
+        print.error("error", error);
+      }
+    }//.bind(print, self); //EagleonConsole
+    print.name1("ClickArea Activity");
+    this.event_clickArea(selectorString, callFn, sfn, print);
   }
   async act_htmlTag(selectorString, valueArea) {
     let print = new EagleonConsole(this.debug);
@@ -339,41 +334,42 @@ export class EagleonActivityTracking extends EagleonEvent {
       print.error("error", error);
     }
   }
-  async act_gpsInfo() {
+  async act_gpsInfo(isSave = true) {
     let print = new EagleonConsole(this.debug);
     print.name1("GpsInfo Activity");
-    let eagleonInstance = this;
-    let gps_callFn = function (data) {
-      print.vaildInput2("-");
-      try {
-        if (data && data.coords) {
-          let info = {
-            accuracy: data.coords.accuracy.accuracy,
-            altitude: data.coords.altitude,
-            altitudeAccuracy: data.coords.altitudeAccuracy,
-            heading: data.coords.heading,
-            latitude: data.coords.latitude,
-            longitude: data.coords.longitude,
-            speed: data.coords.speed,
-            timestamp: data.timestamp,
-          };
-          print.gotIt3(info);
-          let log = {
-            json_data: info,
-            type: 'GpsInfo',
-          };
-          let res = eagleonInstance._save(log), print;
+    try {
+      let geo = await this.event_geoLocation();
+      if (geo && geo.coords) {
+        let info = {
+          accuracy: geo.coords.accuracy.accuracy,
+          altitude: geo.coords.altitude,
+          altitudeAccuracy: geo.coords.altitudeAccuracy,
+          heading: geo.coords.heading,
+          latitude: geo.coords.latitude,
+          longitude: geo.coords.longitude,
+          speed: geo.coords.speed,
+          timestamp: geo.timestamp,
+        };
+        print.gotIt3(info);
+        let log = {
+          json_data: info,
+          type: 'GpsInfo',
+        };
+        if (isSave) {
+          let res = eagleonInstance._save(log);
           print.response5(res);
-        } else {
-          print.error("GPS permission Error", data);
+          return res;
         }
-      } catch (error) {
-        print.error("error", error);
+        return geo;
+      } else {
+        print.error("GPS permission Error", geo);
       }
-    }.bind(eagleonInstance, print);
-    this.event_geoLocation(gps_callFn)
+    } catch (error) {
+      print.error("GPS permission Error", error);
+      return { statusCode: 400, message: [error] }
+    }
   }
-  async act_CustomTracking(custom_title, string_value = '', json_data = null) {
+  async act_customTracking(custom_title, string_value = '', json_data = null) {
     let print = new EagleonConsole(this.debug);
     print.name1("CustomTracking Activity");
     try {
@@ -388,6 +384,18 @@ export class EagleonActivityTracking extends EagleonEvent {
       print.response5(res);
     } catch (error) {
       print.error("error", error);
+    }
+  }
+  async act_gpsAddress(latitude, longitude) {
+    try {
+      let res = await this.http.httpRequest({
+        url: 'uep/usage-activity/gps-address',
+        method: 'POST',
+        data: { latitude: latitude, longitude: longitude },
+      });
+      return res;
+    } catch (error) {
+      return { statusCode: 500, message: error }
     }
   }
 }

@@ -1,28 +1,30 @@
 <!DOCTYPE html>
 
 <head>
-    <title>page 1</title>
+    <title>SDS Example</title>
     <script type="module" src="/index.js"></script>
 
 </head>
 
 <body>
-    <a href="./page2.html">Page 2</a>
-    <a href="./index.html">Home</a>
+    <a href="./page2.html">CMS Example</a>
+    <a href="./index.html">Activity Example</a>
 
     <form id="userFormId">
         <h2>User Form</h2>
-        <label for="name">Name</label><br>
+        <label for="name">First Name</label><br>
         <input type="text" id="fname" name="name" value="" /><br>
-        <label for="name">Name 2</label><br>
+        <label for="name">Last Name</label><br>
         <input type="text" id="fname" name="name" value="" /><br>
         <label for="age">Age</label><br>
         <input type="text" id="age" name="age" value="" /><br>
         <label for="general">general</label><br>
         <label><input type="radio" name="general" value="male">Male</label>
         <label><input type="radio" name="general" value="female">Female</label>
-        <br>
-        <br>
+        <br><br>
+        <label for="address">Address</label><br>
+        <textarea id="address" name="adderss"></textarea><br><button id="gps" type="button">Get Address</button>
+        <br><br>
         <label for="skills">Skills</label><br>
         <label><input type="checkbox" name="skills" value="java">Java</label>
         <label><input type="checkbox" name="skills" value="c">C</label>
@@ -34,16 +36,18 @@
     <hr>
     <form id="userDataFillFormId">
         <h2>User Data Fill Form</h2>
-        <label for="name">Name</label><br>
+        <label for="name">First Name</label><br>
         <input type="text" id="fname" name="name" value="" /><br>
-        <label for="name">Name 2</label><br>
+        <label for="name">Last Name</label><br>
         <input type="text" id="fname" name="name" value="" /><br>
         <label for="age">Age</label><br>
         <input type="text" id="age" name="age" value="" /><br>
         <label for="general">general</label><br>
         <label><input type="radio" name="general" value="male">Male</label>
         <label><input type="radio" name="general" value="female">Female</label>
-        <br>
+        <br><br>
+        <label for="address">Address</label><br>
+        <textarea id="address" name="adderss"></textarea><br>
         <br>
         <label for="skills">Skills</label><br>
         <label><input type="checkbox" name="skills" value="java">Java</label>
@@ -61,19 +65,19 @@
             ClientID: '20904292-0f25-4d61-847b-bbe2bd99b881',
             SecretKey: 'o6iWCpgdmDXupsId7W6MQzvyeaLB1041ZZhK4p7p4G8=',
         })
-        ev.activityTracking().act_gpsInfo();
         // .cms({
         //   id: 'e8fe27ff-4386-4815-abef-913276c08be9',
         //   renderName: '#name',
         //   renderShort: '#short',
         //   renderContent: '#content',
         // })
+        const act = ev.activityTracking();
+        act.startRecord();
         function saveForm() {
             let sds = ev.structuredData();
             sds.sendForm('userFormId')
         }
         document.querySelector("#saveBtn").addEventListener("click", saveForm);
-
         var sds = ev.structuredData(), updateFormId = "userDataFillFormId", sdsId = 9;
         sds.fillform(updateFormId, sdsId);
         function updateForm() {
@@ -81,6 +85,23 @@
             sds.updateForm(sdsId, updateFormId);
         }
         document.querySelector("#updateBtn").addEventListener("click", updateForm);
+        document.querySelector("#gps").addEventListener("click", function () {
+            let inputElm = document.querySelector("#address");
+            let gps = act.act_gpsInfo(false);
+            gps.then((data) => {
+                //console.log("data", data);
+                let url = `https://nominatim.openstreetmap.org/reverse?lat=${data.coords.latitude}&lon=${data.coords.longitude}&format=json`;
+                ads = act.http.httpRequest({ method: 'GET', url: url, externalUrl: true });
+                ads.then((res) => {
+                    console.log("address", res);
+                    inputElm.value = res.display_name;
+                }).catch((error) => {
+                    console.log("error fill error", error)
+                });
+            }).catch((error) => {
+                console.log("error", error);
+            })
+        });
     };
 
 </script>

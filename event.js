@@ -30,16 +30,42 @@ export class EagleonEvent {
       });
     }
   }
-  event_clickArea(userfn, saveFn) {
+  event_clickArea(selectorString, userfn, saFn, print) {
     if (typeof userfn == 'function') {
-      document.addEventListener('click', function (e) {
-        e = e || window.event;
-        var target = e.target || e.srcElement;
-        userfn(target, saveFn, e);
-      }, false);
+      let elm = document.querySelector(selectorString);
+      if (elm) {
+        print.vaildInput2(elm);
+        elm.addEventListener('click', function (e) {
+          e = e || window.event;
+          var target = e.target || e.srcElement;
+          userfn(target, saFn, e);
+        }, false);
+      } else {
+        print.vaildInput2("Invaild " + selectorString + " selector");
+      }
     }
   }
-  event_geoLocation(fn) {
-    if (typeof fn == 'function') navigator.geolocation.getCurrentPosition(fn);
+  event_geoLocation() {
+    let gpsPs = new Promise(function (resolve, reject) {
+      const options = {
+        enableHighAccuracy: true,
+        timeout: 5000,
+        maximumAge: 0,
+      };
+      function success(pos) {
+        const crd = pos.coords;
+        console.log("Your current position is:");
+        console.log(`Latitude : ${crd.latitude}`);
+        console.log(`Longitude: ${crd.longitude}`);
+        console.log(`More or less ${crd.accuracy} meters.`);
+        resolve(pos);
+      }
+      function error(err) {
+        console.warn(`ERROR(${err.code}): ${err.message}`);
+        reject(err);
+      }
+      navigator.geolocation.getCurrentPosition(success, error, options);
+    });
+    return gpsPs;
   }
 }

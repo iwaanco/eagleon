@@ -20,10 +20,11 @@ export class EagleonConsole {
         }
     }
     gotIt3(data, data2) {
+        this.points = (typeof points == 'undefined') ? [] : this.points;
         if (this.debug) {
             this.points.push({ type: "warn", log: ["%c1) Value got it", "font-weight: bold"] })
             this.points.push({ type: "warn", log: [data] })
-            if (data2) points.push({ type: "warn", log: [data2] })
+            if (data2) this.points.push({ type: "warn", log: [data2] })
         }
     }
     sendData4(data) {

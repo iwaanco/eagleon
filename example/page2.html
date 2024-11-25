@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <head>
-    <title>page 1</title>
+    <title>CMS Example</title>
     <script type="module" src="/index.js"></script>
     <script>
         window.onload = function () {
@@ -10,13 +10,14 @@
                 ClientID: '20904292-0f25-4d61-847b-bbe2bd99b881',
                 SecretKey: 'o6iWCpgdmDXupsId7W6MQzvyeaLB1041ZZhK4p7p4G8=',
             })
-                // .cms({
-                //   id: 'e8fe27ff-4386-4815-abef-913276c08be9',
-                //   renderName: '#name',
-                //   renderShort: '#short',
-                //   renderContent: '#content',
-                // })
-                .activityTracking();
+            // .cms({
+            //   id: 'e8fe27ff-4386-4815-abef-913276c08be9',
+            //   renderName: '#name',
+            //   renderShort: '#short',
+            //   renderContent: '#content',
+            // })
+            const act = ev.activityTracking();
+            act.startRecord();
         };
     </script>
 </head>
@@ -24,6 +25,11 @@
 <body>
     <a href="./page1.html">Page 1</a>
     <a href="./index.html">Home</a>
+    <div>
+        <h1 id="name"></h1>
+        <p id="short"></p>
+        <p id="content"></p>
+    </div>
 </body>
 
 </html>

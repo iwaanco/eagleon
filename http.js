@@ -17,9 +17,14 @@ export class EagleonHttp {
       async = true,
       basicAuth = true,
       responseType = 'Object',
-      init = false
+      init = false,
+      externalUrl = false
     } = prop;
-    url = this.internalUrl ? ((init) ? this.InitUrl : this.ApiUrl) + url : url;
+    if (externalUrl) {
+      basicAuth = false;
+    } else {
+      url = this.internalUrl ? ((init) ? this.InitUrl : this.ApiUrl) + url : url;
+    }
     let prom = new Promise((resolve, reject) => {
       try {
         var request = new XMLHttpRequest();
@@ -52,21 +57,5 @@ export class EagleonHttp {
       }
     });
     return prom;
-  }
-  error(debug, message, title) {
-    if (debug) {
-      if (title) console.error(`VVV=====>${title}<=====VVV`);
-      if (message)
-        throw (new Error(message))
-    }
-  }
-  warning(debug, message, title, message2 = "") {
-    if (debug) {
-      if (title && message) {
-        console.warn(`VVV=====> ${title} <=====VVV`);
-        console.warn(message);
-        if (message2) console.warn(message2);
-      }
-    }
   }
 }

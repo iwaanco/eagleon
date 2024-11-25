@@ -6,7 +6,6 @@ export interface eagleon_actModules {
   InputValue: { selectorString: string },
   SystemTime: boolean,
   ScreenInfo: boolean,
-  GpsInfo: { tiggerTime: number },
   ClickArea: { callBack(target: any, savefn: ClickAreaSaveCallBack, e: any) },
   HtmlTag: { callback?(selectorString: string, valueArea: 'innerText' | 'innerHTML' | 'outerHTML' | 'outerText'): Promise<void> }
   CustomTracking: { custom_title: string, string_value: string, json_data: any }
@@ -38,7 +37,7 @@ declare class EagleonActivityTracking extends EagleonEvent {
   //save(addOninfo: any): Promise<void>;
   //isDayLogged(): boolean;
   //init(): Promise<void>;
-  recorder(): Promise<void>;
+  startRecord(): Promise<void>;
   //findFullURL(ev?: { url: string | any }): string;
   act_navigatePageURL(ev?: { url: string | any }): void;
   act_refererUrl(): Promise<void>;
