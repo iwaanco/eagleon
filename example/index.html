@@ -3,7 +3,7 @@
 
 <head>
   <title>Activity Example</title>
-  <script type="module" src="/index.js"></script>
+  <script id="eagleon" type="module" src="/index.js"></script>
 </head>
 
 <body>
@@ -47,9 +47,18 @@
       </tr>
     </table>
   </div>
+
+  <h2>Get HTML tag data Activity Example</h2>
+  <div>
+    <b id="head">HTML tag</b>
+  </div>
+  <h2>GPS Info Activity Example</h2>
+  <button id="gps" type="button">Get User Place</button>
+
   <script>
     let ev;
-    window.onload = function () {
+    let script = document.querySelector("#eagleon");
+    script.addEventListener("load", function () {
       //console.log('window.Eagleon', EagleonStructuredData);
       ev = new window.Eagleon.SDK({
         ClientID: '20904292-0f25-4d61-847b-bbe2bd99b881',
@@ -65,7 +74,7 @@
         {
           repeatActivities: {
             NavigatePageURL: true,
-            HtmlTag: { selectorString: "h2", valueArea: "innerHTML" }
+            HtmlTag: { selectorString: "h2", valueArea: "innerHTML", clicked: true }
           },
           routineActivities: {
             SystemTime: true,
@@ -81,7 +90,8 @@
       );
       act.startRecord();
       //act_inputValue
-      document.querySelector("#search").addEventListener("change", function () {
+      let ser = document.querySelector("#search");
+      ser.addEventListener("change", function () {
         act.act_inputValue("#search");
       });
 
@@ -89,12 +99,16 @@
       function clickFinder(target, saveFn, e) {
         console.log("target", target.tagName, "->", target.innerHTML);
         let json = { html: target.innerHTML, tagName: target.tagName };
-        console.log("here come pain", target.tagName, json);
         saveFn(target.tagName, json);
       }
       act.act_clickArea("#box", clickFinder);
-      //console.log("ok head", ev);
-    };
+      //act_htmlTag
+      act.act_htmlTag("#head", 'outerHTML');
+      document.querySelector("#gps").addEventListener("click", function () {
+        SaveGpsActivity = true;
+        let gps = act.act_gpsInfo(SaveGpsActivity);
+      });
+    });
   </script>
 </body>
 

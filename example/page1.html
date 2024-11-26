@@ -2,8 +2,7 @@
 
 <head>
     <title>SDS Example</title>
-    <script type="module" src="/index.js"></script>
-
+    <script id="eagleon" type="module" src="/index.js"></script>
 </head>
 
 <body>
@@ -59,7 +58,7 @@
     </form>
 </body>
 <script>
-    window.onload = function () {
+    script.addEventListener("load", function () {
         //console.log('window.Eagleon', EagleonStructuredData);
         const ev = new window.Eagleon.SDK({
             ClientID: '20904292-0f25-4d61-847b-bbe2bd99b881',
@@ -102,7 +101,7 @@
                 console.log("error", error);
             })
         });
-    };
+    });
 
 </script>
 

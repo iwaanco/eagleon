@@ -2,9 +2,10 @@
 
 <head>
     <title>CMS Example</title>
-    <script type="module" src="/index.js"></script>
+    <script id="eagleon" type="module" src="/index.js"></script>
     <script>
-        window.onload = function () {
+        let script = document.querySelector("#eagleon");
+        script.addEventListener("load", function () {
             //console.log('window.Eagleon', EagleonStructuredData);
             const ev = new window.Eagleon.SDK({
                 ClientID: '20904292-0f25-4d61-847b-bbe2bd99b881',
@@ -18,7 +19,7 @@
             // })
             const act = ev.activityTracking();
             act.startRecord();
-        };
+        });
     </script>
 </head>
 

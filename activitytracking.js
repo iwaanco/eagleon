@@ -31,15 +31,13 @@ export class EagleonActivityTracking extends EagleonEvent {
   debug = false;
   constructor(obj = {}) {
     super();
+    this.debug = obj.debug ? true : false;
     this.ClientID = obj.ClientID;
     this.SecretKey = obj.SecretKey;
     this.repeatActivities = obj.repeatActivities ? obj.repeatActivities : this.repeatActivities;
     this.routineActivities = obj.routineActivities ? obj.routineActivities : this.routineActivities;
     this.lifeCycle = obj.lifeCycle ? obj.lifeCycle : this.lifeCycle;
-    this.debug = obj.debug ? true : this.debug;
     this.http = new EagleonHttp(obj);
-    this.print = new EagleonConsole();
-    this.print.debug = this.debug;
   }
   get _cookie() {
     var cookie = {
@@ -196,8 +194,8 @@ export class EagleonActivityTracking extends EagleonEvent {
   }
   async act_navigatePageURL(ev = {}) {
     let print = new EagleonConsole(this.debug);
-    print.name1("NavigatePageURL Activity");
     try {
+      print.name1("NavigatePageURL Activity");
       print.vaildInput2('-');
       let log = { type: 'NavigatePageURL' };
       log.url = this._findFullURL(ev);
@@ -243,11 +241,11 @@ export class EagleonActivityTracking extends EagleonEvent {
     }
   }
   act_clickArea(selectorString, callFn) {
-    let print = new EagleonConsole(this.debug);
     let self = this;
+    let print = new EagleonConsole(this.debug);
+    print.name1("ClickArea Activity");
     function sfn(string_value, json_data) {
       try {
-        print = new EagleonConsole(self.debug);
         print.gotIt3(string_value, json_data);
         let info = {};
         info.string_value = string_value;
@@ -263,17 +261,17 @@ export class EagleonActivityTracking extends EagleonEvent {
         print.error("error", error);
       }
     }//.bind(print, self); //EagleonConsole
-    print.name1("ClickArea Activity");
     this.event_clickArea(selectorString, callFn, sfn, print);
   }
   async act_htmlTag(selectorString, valueArea) {
     let print = new EagleonConsole(this.debug);
     print.name1("HtmlTag Activity");
     let values = ['innerText', 'innerHTML', 'outerHTML', 'outerText'];
-    if (values.includes()) {
+    if (values.includes(valueArea)) {
       let tag = document.querySelector(selectorString);
       if (tag) {
         try {
+          //console.log("ok....")
           let d = tag[valueArea];
           print.gotIt3(d);
           let log = { string_value: d, type: 'HtmlTag' };
@@ -287,6 +285,7 @@ export class EagleonActivityTracking extends EagleonEvent {
       }
     } else {
       print.vaildInput2("Invalid valueArea parameter", valueArea);
+      print.print();
     }
   }
   async act_dateTime() {
@@ -384,18 +383,6 @@ export class EagleonActivityTracking extends EagleonEvent {
       print.response5(res);
     } catch (error) {
       print.error("error", error);
-    }
-  }
-  async act_gpsAddress(latitude, longitude) {
-    try {
-      let res = await this.http.httpRequest({
-        url: 'uep/usage-activity/gps-address',
-        method: 'POST',
-        data: { latitude: latitude, longitude: longitude },
-      });
-      return res;
-    } catch (error) {
-      return { statusCode: 500, message: error }
     }
   }
 }

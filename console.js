@@ -1,15 +1,19 @@
 export class EagleonConsole {
     debug = false;
     points = [];
+    name = "";
     constructor(debug) {
         this.debug = debug;
     }
     name1(title) {
+        this.name = title;
         if (this.debug) {
-            this.points.push({ type: "warn", log: [`<<<-----------------------|| ${title}`] })
+            this.points.push({ type: "warn", log: [`<<<-----------------------|| ${title}`] });
         }
+
     }
     vaildInput2(data, data2) {
+        console.log()
         if (this.debug) {
             this.points.push({ type: "warn", log: ["%c0) Vaild data/tag/text", "font-weight: bold"] })
             this.points.push({ type: "warn", log: [data] })
@@ -59,7 +63,8 @@ export class EagleonConsole {
         }
     }
     print() {
-        this.end()
+        this.end();
+        console.warn(`<<<-----------------------|| ${this.name}`);
         for (let i = 0; i < this.points.length; i++) {
             console[this.points[i].type](...this.points[i].log)
         }
