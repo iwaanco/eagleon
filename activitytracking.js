@@ -199,6 +199,7 @@ export class EagleonActivityTracking extends EagleonEvent {
       print.vaildInput2('-');
       let log = { type: 'NavigatePageURL' };
       log.url = this._findFullURL(ev);
+      log.string_value = log.url;
       print.gotIt3(log.url);
       let res = await this._save(log, print);
       print.response5(res);

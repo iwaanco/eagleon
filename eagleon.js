@@ -21,12 +21,10 @@ export class EagleonSDK {
     this.ClientID = data.ClientID;
     this.SecretKey = data.SecretKey;
   }
-  async cms(settings = {}) {
-    let cms = new EagleonCms({
-      ClientID: this.ClientID,
-      SecretKey: this.SecretKey,
-    });
-    cms.render(settings);
+  cms(obj = {}) {
+    obj.ClientID = this.ClientID;
+    obj.SecretKey = this.SecretKey;
+    let cms = new EagleonCms(obj);
     return cms;
   }
   activityTracking(obj = {}) {
