@@ -1,27 +1,29 @@
 {
-  "name": "eagleon_",
-  "version": "1.0.0",
-  "description": "Eagleon is fast logs-storing and data-storing software in smart and easy ways. It saves your time and the work of development.",
+  "name": "eagleon_sdk",
+  "version": "0.0.1",
+  "description": "Eagleon SDK service is used to build your website and also helps you collect information from your website visitors. We offer four types of software development tools: Web Activity, Logs, Content Management System, and Structured Data Storage.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/iwaanco/eagleon_.git"
+    "url": "git+https://github.com/iwaanco/eagleon_sdk.git"
   },
   "keywords": [
     "eagleon",
-    "eaglon",
+    "eagleon SDK",
     "iwaan",
-    "logs",
-    "store"
+    "Web Activity"
   ],
-  "author": "Iwaan research and development pvt. ltd. <info@iwaan.co>",
+  "author": "Iwaan <info@iwaan.co>",
   "license": "ISC",
   "types": "./index.d.ts",
   "bugs": {
-    "url": "https://github.com/iwaanco/eagleon_/issues"
+    "url": "https://github.com/iwaanco/eagleon_sdk/issues"
   },
-  "homepage": "https://github.com/iwaanco/eagleon_#readme"
+  "homepage": "https://github.com/iwaanco/eagleon_sdk#readme",
+  "directories": {
+    "example": "example"
+  }
 }
