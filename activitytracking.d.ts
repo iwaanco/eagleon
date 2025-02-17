@@ -42,10 +42,10 @@ declare class EagleonActivityTracking extends EagleonEvent {
   act_navigatePageURL(ev?: { url: string | any }): void;
   act_refererUrl(): Promise<void>;
   act_inputValue(selectorString: string): Promise<void>;
-  act_clickArea(callFn: function): void;
+  act_clickArea(selectorString: string, callFn: Function): void;
   act_htmlTag(selectorString: string, valueArea: string): Promise<void>;
   act_dateTime(): Promise<void>;
   act_screenInfo(): Promise<void>;
-  act_gpsInfo(callFn?: function): Promise<void>;
+  act_gpsInfo(isSave?: boolean): Promise<void>;
   act_CustomTracking(custom_title: string, string_value: string, json_data: Object): Promise<void>;
 }
